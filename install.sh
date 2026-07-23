@@ -26,7 +26,7 @@ sudo pacman -S --needed --noconfirm \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro \
     networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano \
-    xorg-xrandr power-profiles-daemon python-gobject 
+    xorg-xrandr power-profiles-daemon python-gobject gtk-3 
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -134,6 +134,7 @@ EOF
 echo "Enabling services..."
 systemctl --user enable --now greenclip.service || true
 sudo systemctl enable --now NetworkManager
+sudo systemctl enable --now power-profiles-daemon
 sudo systemctl enable lightdm
 
 echo "Installation complete! Rebooting system..."
