@@ -56,7 +56,7 @@ echo "Copying and compiling SEHWM & ST in $HOME..."
 if [ -d "$SCRIPT_DIR/sehwm" ]; then
     cp -r "$SCRIPT_DIR/sehwm" "$HOME/"
     cd "$HOME/sehwm"
-    # Pārsaucam ja nepieciešams un nokompilējam tieši ar gcc
+    
     gcc sehwm.c -o sehwm -lX11
     sudo chown -R "$USER:$USER" "$HOME/sehwm"
 else
