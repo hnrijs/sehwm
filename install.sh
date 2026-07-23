@@ -25,7 +25,8 @@ sudo pacman -S --needed --noconfirm \
     feh thunar rofi imv cava btop playerctl alacritty zip unzip polkit-gnome \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro \
-    networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano
+    networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano \
+    xorg-xrandr power-profiles-daemon python-gobject 
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -40,7 +41,7 @@ fi
 
 # 4. Install AUR packages (including slstatus)
 echo "Installing AUR packages..."
-yay -S --noconfirm helium-browser-bin rofi-greenclip slstatus
+yay -S --noconfirm helium-browser-bin rofi-greenclip
 
 # 5. Copy configuration files (.config directory)
 echo "Copying config files to $HOME/.config/..."
@@ -78,7 +79,6 @@ nm-applet &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # Start slstatus for date and time in the status bar
-slstatus &
 
 # Launch SEHWM
 exec "$HOME/seh/sehwm"
@@ -93,7 +93,6 @@ cat << 'EOF' > "$HOME/.xprofile"
 feh --bg-scale "$HOME/Pictures/main.png" &
 nm-applet &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-slstatus &
 EOF
 chmod +x "$HOME/.xprofile"
 
