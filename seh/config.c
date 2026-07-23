@@ -665,6 +665,7 @@ int main() {
     KeyCode pavu_code     = XKeysymToKeycode(dpy, XK_a);
     KeyCode escape_code   = XKeysymToKeycode(dpy, XK_Escape);
     KeyCode n_code        = XKeysymToKeycode(dpy, XK_n);
+    KeyCode m_code        = XKeysymToKeycode(dpy, XK_m);
     
     KeyCode XF86AudioRaiseVolume_code = XKeysymToKeycode(dpy, XF86XK_AudioRaiseVolume);
     KeyCode XF86AudioLowerVolume_code = XKeysymToKeycode(dpy, XF86XK_AudioLowerVolume);
@@ -720,7 +721,7 @@ int main() {
         XGrabKey(dpy, pavu_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, n_code, MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, n_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
-      
+        XGrabKey(dpy, m_code, MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
        
         
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Escape), MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
@@ -913,6 +914,8 @@ int main() {
                     run_cmd("alacritty -e sh -c '$HOME/.config/scripts/system_clean.sh; echo \"sehwm\"; read'");
                 } else if (ev.xkey.keycode == n_code && (ev.xkey.state & ShiftMask)) {
                     run_cmd("alacritty -e nmtui");
+                } else if (ev.xkey.keycode == m_code && (ev.xkey.state & ShiftMask)) {
+                    run_cmd("sh -c '$HOME/.config/scripts/sysmenu.sh'");
                 } else if (ev.xkey.keycode == XF86AudioRaiseVolume_code) {
                     run_cmd("pactl set-sink-volume @DEFAULT_SINK@ +5%");
                 } else if (ev.xkey.keycode == XF86AudioLowerVolume_code) {
