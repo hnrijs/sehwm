@@ -1,0 +1,91 @@
+configuration {
+    font: "monospace 12";
+    show-icons: false;
+    modi: "drun,run";
+}
+
+* {
+    bg: #000000;
+    bg-alt: #000000;
+    bg-soft: #FFFFFF;
+
+    fg: #888888;
+    fg-bright: #000000;
+    fg-dim: #555555;
+
+    accent-white: #FFFFFF;
+    edge: #333333;
+
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 35%;
+    padding: 8px;
+    border: 2px;
+    border-color: @accent-white;
+    background-color: @bg;
+}
+
+mainbox {
+    background-color: @bg;
+    spacing: 6px;
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    background-color: @bg-alt;
+    padding: 6px;
+    border: 1px;
+    border-color: @edge;
+    children: [ entry ];
+}
+
+entry {
+    background-color: transparent;
+    text-color: #FFFFFF;
+    placeholder: "search";
+    placeholder-color: @fg-dim;
+}
+
+listview {
+    background-color: @bg;
+    lines: 8;
+    spacing: 3px;
+    scrollbar: true;
+    border: 0px;
+}
+
+element {
+    background-color: @bg;
+    text-color: @fg;
+    padding: 4px 6px;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: @bg;
+    text-color: @fg;
+}
+
+element selected.normal {
+    background-color: @bg-soft;
+    text-color: @fg-bright;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+}
+
+element-icon {
+    background-color: transparent;
+}
+
+scrollbar {
+    background-color: @bg;
+    handle-color: @edge;
+    border: 0px;
+    width: 5px;
+}
