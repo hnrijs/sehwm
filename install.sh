@@ -6,7 +6,7 @@ set -e
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Starting minimal automated installation..."
+echo "Starting automated installation..."
 
 # 0. Ensure git is installed first
 if ! command -v git &> /dev/null; then
@@ -50,17 +50,18 @@ else
     echo "Warning: No config folder found in repository!"
 fi
 
-# 6. Copy SEHWM to $HOME, compile it, and fix ownership permissions
-echo "Copying and compiling SEHWM in $HOME..."
-
-if [ -d "$SCRIPT_DIR/sehwm" ]; then
-    cp -r "$SCRIPT_DIR/sehwm" "$HOME/"
-    cd "$HOME/sehwm"
+# 6. Copy 'seh' folder to $HOME, compile config.c into sehwm, and fix permissions
+echo "Copying and compiling window manager from 'seh' folder..."
+if [ -d "$SCRIPT_DIR/seh" ]; then
+    rm -rf "$HOME/seh"
+    cp -r "$SCRIPT_DIR/seh" "$HOME/seh"
     
-    gcc sehwm.c -o sehwm -lX11
-    sudo chown -R "$USER:$USER" "$HOME/sehwm"
+    # Ieejam mapē, kompilējam config.c par sehwm un iestatām tiesības
+    cd "$HOME/seh"
+    gcc config.c -o sehwm -lX11
+    sudo chown -R "$USER:$USER" "$HOME/seh"
 else
-    echo "Error: sehwm directory not found in repo!"
+    echo "Error: seh directory not found in repo!"
 fi
 
 cd "$SCRIPT_DIR"
@@ -80,7 +81,7 @@ nm-applet &
 slstatus &
 
 # Launch SEHWM
-exec "$HOME/sehwm/sehwm"
+exec "$HOME/seh/sehwm"
 EOF
 
 cp "$HOME/.xinitrc" "$HOME/.xsession"
@@ -99,11 +100,11 @@ chmod +x "$HOME/.xprofile"
 # 8. Create xsessions entry for LightDM
 echo "Creating SEHWM desktop session for LightDM..."
 sudo mkdir -p /usr/share/xsessions
-cat << 'EOF' | sudo tee /usr/share/xsessions/sehwm.desktop > /dev/null
+cat << EOF | sudo tee /usr/share/xsessions/sehwm.desktop > /dev/null
 [Desktop Entry]
 Name=sehwm
 Comment=Custom C X11 Window Manager
-Exec=/home/$USER/sehwm/sehwm
+Exec=$HOME/seh/sehwm
 Type=Application
 X-LightDM-DesktopName=sehwm
 DesktopNames=sehwm
@@ -124,11 +125,10 @@ fi
 echo "Fixing home directory paths for $USER..."
 find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/null || true
 
-# 12. Add sehwm-update alias to .bashrc
+# 12. Add sehwm-update alias to .bashrc (lai varētu ātri pārvietoties un pārkompilēt)
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
-# Custom alias to quickly re-compile sehwm
-alias sehwm-update='cd "$HOME/sehwm" && gcc sehwm.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
+alias sehwm-update='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
 EOF
 
 # 13. Enable system and user services
