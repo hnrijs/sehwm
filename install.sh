@@ -6,7 +6,7 @@ set -e
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Starting automated installation..."
+echo "Starting minimal automated installation..."
 
 # 0. Ensure git is installed first
 if ! command -v git &> /dev/null; then
@@ -56,12 +56,12 @@ if [ -d "$SCRIPT_DIR/seh" ]; then
     rm -rf "$HOME/seh"
     cp -r "$SCRIPT_DIR/seh" "$HOME/seh"
     
-    # Ieejam mapē, kompilējam config.c par sehwm un iestatām tiesības
+    # Enter directory, compile config.c into sehwm, and set permissions
     cd "$HOME/seh"
     gcc config.c -o sehwm -lX11
     sudo chown -R "$USER:$USER" "$HOME/seh"
 else
-    echo "Error: seh directory not found in repo!"
+    echo "Error: seh directory not found in repository!"
 fi
 
 cd "$SCRIPT_DIR"
@@ -98,7 +98,7 @@ EOF
 chmod +x "$HOME/.xprofile"
 
 # 8. Create xsessions entry for LightDM
-echo "Creating SEHWM desktop session for LightDM..."
+echo "Creating LightDM session file..."
 sudo mkdir -p /usr/share/xsessions
 cat << EOF | sudo tee /usr/share/xsessions/sehwm.desktop > /dev/null
 [Desktop Entry]
@@ -122,10 +122,10 @@ if [ -d "$HOME/.config/scripts" ]; then
 fi
 
 # 11. Dynamically fix home paths in configs for current user
-echo "Fixing home directory paths for $USER..."
+echo "Fixing home paths in configurations for $USER..."
 find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/null || true
 
-# 12. Add sehwm-update alias to .bashrc (lai varētu ātri pārvietoties un pārkompilēt)
+# 12. Add sehwm-update alias to .bashrc
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
 alias sehwm-update='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
@@ -137,6 +137,6 @@ systemctl --user enable --now greenclip.service || true
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable lightdm
 
-echo "Installation Complete! Rebooting..."
+echo "Installation complete! Rebooting system..."
 sleep 5
 sudo reboot
