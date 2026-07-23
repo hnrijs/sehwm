@@ -25,7 +25,7 @@ sudo pacman -S --needed --noconfirm \
     feh thunar rofi imv cava btop playerctl alacritty zip unzip polkit-gnome \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro \
-    networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano materia-theme
+    networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
