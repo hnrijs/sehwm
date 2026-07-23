@@ -133,12 +133,19 @@ fi
 echo "Fixing home directory paths for $USER..."
 find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/null || true
 
-# 12. Enable system and user services
+# 12. Add sehwm-update alias to .bashrc
+echo "Adding sehwm-update alias..."
+cat << 'EOF' >> "$HOME/.bashrc"
+# Custom alias to quickly re-compile sehwm
+alias sehwm-update='cd "$HOME/sehwm" && gcc sehwm.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
+EOF
+
+# 13. Enable system and user services
 echo "Enabling services..."
 systemctl --user enable --now greenclip.service || true
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable lightdm
 
-echo "Installation Complete! Rebooting in 5 seconds..."
+echo "Installation Complete! Rebooting..."
 sleep 5
 sudo reboot
