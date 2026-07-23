@@ -658,11 +658,14 @@ int main() {
     KeyCode split_code    = XKeysymToKeycode(dpy, XK_s);
     KeyCode stack_toggle  = XKeysymToKeycode(dpy, XK_w);
     KeyCode stack_cycle   = XKeysymToKeycode(dpy, XK_x);
-    KeyCode rofi_run_code = XKeysymToKeycode(dpy, XK_space);
+    KeyCode rofi_run_code =  XKeysymToKeycode(dpy, XK_space);
     KeyCode obs_code      = XKeysymToKeycode(dpy, XK_o);
     KeyCode greenclip_code= XKeysymToKeycode(dpy, XK_v);
     KeyCode lock_code     = XKeysymToKeycode(dpy, XK_l);
-
+    KeyCode pavu_code     = XKeysymToKeycode(dpy, XK_a);
+    KeyCode escape_code   = XKeysymToKeycode(dpy, XK_Escape);
+    KeyCode n_code        = XKeysymToKeycode(dpy, XK_n);
+    
     KeyCode XF86AudioRaiseVolume_code = XKeysymToKeycode(dpy, XF86XK_AudioRaiseVolume);
     KeyCode XF86AudioLowerVolume_code = XKeysymToKeycode(dpy, XF86XK_AudioLowerVolume);
     KeyCode XF86AudioMute_code        = XKeysymToKeycode(dpy, XF86XK_AudioMute);
@@ -712,9 +715,14 @@ int main() {
         XGrabKey(dpy, rofi_run_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, obs_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, greenclip_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
-        XGrabKey(dpy, lock_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
-        
         XGrabKey(dpy, greenclip_code, MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
+        XGrabKey(dpy, lock_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
+        XGrabKey(dpy, pavu_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
+        XGrabKey(dpy, n_code, MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
+        XGrabKey(dpy, n_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
+      
+       
+        
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Escape), MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_s), MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_p), MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
@@ -875,6 +883,8 @@ int main() {
                     run_cmd("helium-browser");
                 } else if (ev.xkey.keycode == discord_code) {
                     run_cmd("discord");
+                } else if (ev.xkey.keycode == pavu_code) {
+                    run_cmd("pavucontrol");
                 } else if (ev.xkey.keycode == code_code && !(ev.xkey.state & ShiftMask)) {
                     run_cmd("code");
                 } else if (ev.xkey.keycode == audacious_code && !(ev.xkey.state & ShiftMask)) {
@@ -895,12 +905,14 @@ int main() {
                     run_cmd("maim -s | xclip -selection clipboard -t image/png");
                 } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_p) && (ev.xkey.state & ShiftMask)) {
                     run_cmd("sh -c '$HOME/.config/scripts/power_profile.sh'");
-                } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_u) && (ev.xkey.state & ShiftMask)) {
-                    run_cmd("sh -c '$HOME/.config/scripts/system_update.sh'");
-                } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_c) && (ev.xkey.state & ShiftMask)) {
-                    run_cmd("sh -c '$HOME/.config/scripts/system_clean.sh'");
                 } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_Escape)) {
-                    run_cmd("rofi-powermenu.sh");
+                    run_cmd("sh -c '$HOME/.config/scripts/rofi-powermenu.sh'");                
+                } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_u) && (ev.xkey.state & ShiftMask)) {
+                    run_cmd("alacritty -e sh -c '$HOME/.config/scripts/system_update.sh; echo \"sehwm\"; read'");  
+                } else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XK_c) && (ev.xkey.state & ShiftMask)) {
+                    run_cmd("alacritty -e sh -c '$HOME/.config/scripts/system_clean.sh; echo \"sehwm\"; read'");
+                } else if (ev.xkey.keycode == n_code && (ev.xkey.state & ShiftMask)) {
+                    run_cmd("alacritty -e nmtui");
                 } else if (ev.xkey.keycode == XF86AudioRaiseVolume_code) {
                     run_cmd("pactl set-sink-volume @DEFAULT_SINK@ +5%");
                 } else if (ev.xkey.keycode == XF86AudioLowerVolume_code) {
