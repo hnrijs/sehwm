@@ -18,15 +18,15 @@ fi
 echo "Creating user directories..."
 mkdir -p "$HOME/Documents" "$HOME/Music" "$HOME/Downloads" "$HOME/Pictures" "$HOME/Videos" "$HOME/.config"
 
-# 2. Update system and install official pacman packages
+# 2. Update system and install official pacman packages (skirting lightdm, adding adwaita & power-profiles)
 echo "Installing official pacman packages..."
 sudo pacman -S --needed --noconfirm \
     base-devel wget xorg-server xorg-xinit libx11 libxft libxinerama \
     feh thunar rofi imv cava btop playerctl alacritty zip unzip polkit-gnome \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro \
-    networkmanager network-manager-applet lightdm lightdm-gtk-greeter nano \
-    xorg-xrandr power-profiles-daemon python-gobject gtk-3 
+    networkmanager network-manager-applet nano \
+    xorg-xrandr power-profiles-daemon python-gobject
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -39,7 +39,7 @@ if ! command -v yay &> /dev/null; then
     rm -rf /tmp/yay-build
 fi
 
-# 4. Install AUR packages (including slstatus)
+# 4. Install AUR packages (skipping slstatus if not needed, keeping helper tools)
 echo "Installing AUR packages..."
 yay -S --noconfirm helium-browser-bin rofi-greenclip
 
@@ -67,7 +67,7 @@ fi
 
 cd "$SCRIPT_DIR"
 
-# 7. Setup SEHWM startup files (.xinitrc and .xsession) with slstatus
+# 7. Setup SEHWM startup files (.xinitrc) for startx
 echo "Setting up X11 startup scripts..."
 cat << 'EOF' > "$HOME/.xinitrc"
 #!/bin/bash
@@ -78,64 +78,38 @@ dex --autostart --environment sehwm &
 nm-applet &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
-# Start slstatus for date and time in the status bar
-
 # Launch SEHWM
 exec "$HOME/seh/sehwm"
 EOF
 
-cp "$HOME/.xinitrc" "$HOME/.xsession"
-chmod +x "$HOME/.xinitrc" "$HOME/.xsession"
+chmod +x "$HOME/.xinitrc"
 
-# Setup .xprofile
-cat << 'EOF' > "$HOME/.xprofile"
-#!/bin/bash
-feh --bg-scale "$HOME/Pictures/main.png" &
-nm-applet &
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-EOF
-chmod +x "$HOME/.xprofile"
-
-# 8. Create xsessions entry for LightDM
-echo "Creating LightDM session file..."
-sudo mkdir -p /usr/share/xsessions
-cat << EOF | sudo tee /usr/share/xsessions/sehwm.desktop > /dev/null
-[Desktop Entry]
-Name=sehwm
-Comment=Custom C X11 Window Manager
-Exec=$HOME/seh/sehwm
-Type=Application
-X-LightDM-DesktopName=sehwm
-DesktopNames=sehwm
-EOF
-
-# 9. Copy wallpaper to Pictures directory
+# 8. Copy wallpaper to Pictures directory
 if [ -f "$SCRIPT_DIR/main.png" ]; then
     echo "Copying wallpaper to $HOME/Pictures/main.png..."
     cp "$SCRIPT_DIR/main.png" "$HOME/Pictures/main.png"
 fi
 
-# 10. Make custom scripts executable
+# 9. Make custom scripts executable
 if [ -d "$HOME/.config/scripts" ]; then
     chmod +x "$HOME/.config/scripts/"*
 fi
 
-# 11. Dynamically fix home paths in configs for current user
+# 10. Dynamically fix home paths in configs for current user
 echo "Fixing home paths in configurations for $USER..."
 find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/null || true
 
-# 12. Add sehwm-update alias to .bashrc
+# 11. Add sehwm-update alias to .bashrc
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
 alias sehwm-update='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
 EOF
 
-# 13. Enable system and user services
+# 12. Enable system and user services
 echo "Enabling services..."
 systemctl --user enable --now greenclip.service || true
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now power-profiles-daemon
-sudo systemctl enable lightdm
 
 echo "Installation complete! Rebooting system..."
 sleep 5
