@@ -9,58 +9,41 @@
 #include <sys/wait.h>
 #include <pwd.h>
 
+#define MODKEY Mod4Mask          
+#define MAX_CLIENTS_PER_WS 100   
+#define NUM_WORKSPACES 10        
+#define SCRATCHPAD_WS 9          
+#define BORDER_WIDTH 2           
+#define COLOR_FOCUSED 0xFFFFFF   
+#define COLOR_UNFOCUSED 0x000000 
+#define GAP_INNER 5              
+#define GAP_TOP 5                
+#define GAP_SIDE 5              
 
-/* CONFIGURATION SETTINGS */
-
-
-#define MODKEY Mod4Mask          /* Define the modifier key: Mod4 corresponds to the Super / Windows key */
-#define MAX_CLIENTS_PER_WS 100   /* Maximum number of windows/clients allowed per workspace */
-#define NUM_WORKSPACES 10        /* Total number of available workspaces in the window manager */
-#define SCRATCHPAD_WS 9          /* Designated workspace index used specifically as a floating scratchpad */
-
-#define BORDER_WIDTH 2           /* The border thickness in pixels drawn around every window */
-#define COLOR_FOCUSED 0xFFFFFF   /* Hex color code for the border of the currently focused window */
-#define COLOR_UNFOCUSED 0x000000 /* Hex color code for the border of unfocused windows */
-
-#define GAP_INNER 5              /* Pixel gap size maintained between individual tiled windows */
-#define GAP_TOP 5                /* Pixel gap size maintained at the very top edge of the screen */
-#define GAP_SIDE 5               /* Pixel gap size maintained along the left and right side screen edges */
-
-
-
-
-
-/* Structure representing an individual application window (client) and its states */
 typedef struct {
-    Window win;                /* X11 window identifier */
-    int floating;              /* Boolean flag: 1 if floating mode is active, 0 if tiled */
-    int x, y, width, height;   /* Stored geometry coordinates and dimensions for floating windows */
-    float split_ratio;         /* Custom workspace layout split proportion for the master window */
-    float stack_ratio;         /* Custom split proportion for stack windows */
-    float secondary_ratio;     /* Secondary adjustment scale ratio for specific multi-window layouts */
+    Window win;                
+    int floating;              
+    int x, y, width, height;   
+    float split_ratio;         
+    float stack_ratio;         
+    float secondary_ratio;    
 } Client;
 
-/* Structure representing an individual workspace containing a collection of clients */
+
 typedef struct {
-    Client clients[MAX_CLIENTS_PER_WS]; /* Array storing all client windows belonging to this workspace */
-    int count;                          /* Total number of active client windows currently on this workspace */
-    int split_vertical;                 /* Layout orientation flag: 1 for vertical splitting, 0 for horizontal */
-    int stacked_mode;                   /* Layout mode flag: 1 if stack-monocle view is enabled, 0 otherwise */
-    int stack_index;                    /* Index pointing to the currently active window in stacked view mode */
+    Client clients[MAX_CLIENTS_PER_WS]; 
+    int count;                          
+    int split_vertical;                 
+    int stacked_mode;                   
+    int stack_index;                    
 } Workspace;
 
-/* Global application variables tracking workspaces, display connection, and root window */
 static Workspace workspaces[NUM_WORKSPACES]; 
 static int current_ws = 0;                   
 
 static Display *dpy;                         
 static Window root;                          
 
-
-/* CORE WINDOW MANAGER FUNCTIONS                                              */
-
-
-/* Updates window borders dynamically, emphasizing the currently focused window */
 static void update_borders(Window focused_win) {
     for (int i = 0; i < workspaces[current_ws].count; i++) {
         if (workspaces[current_ws].clients[i].win == focused_win) {
@@ -72,7 +55,6 @@ static void update_borders(Window focused_win) {
     }
 }
 
-/* Calculates and arranges window positions and dimensions based on current layouts and gaps */
 static void tile(void) {
     XWindowAttributes root_attr;
     XGetWindowAttributes(dpy, root, &root_attr);
@@ -81,7 +63,6 @@ static void tile(void) {
 
     Workspace *ws = &workspaces[current_ws];
 
-    /* Handle scratchpad workspace layout logic by forcing floating parameters */
     if (current_ws == SCRATCHPAD_WS) {
         for (int i = 0; i < ws->count; i++) {
             Client *c = &ws->clients[i];
@@ -92,7 +73,6 @@ static void tile(void) {
         return;
     }
 
-    /* Handle stacked/monocle workspace viewing layout mode */
     if (ws->stacked_mode) {
         for (int i = 0; i < ws->count; i++) {
             Client *c = &ws->clients[i];
@@ -118,7 +98,6 @@ static void tile(void) {
 
     if (tiled_count <= 0) return;
 
-    /* Define usable screen area boundaries accounting for configured gaps */
     int usable_x = GAP_SIDE;
     int usable_y = GAP_TOP;
     int usable_w = sw - (GAP_SIDE * 2);
@@ -153,7 +132,7 @@ static void tile(void) {
 
     int master_w, master_h, stack_x, stack_y, stack_w, stack_h;
 
-    /* Compute master and stack split coordinates depending on layout direction */
+   
     if (ws->split_vertical) {
         int total_h = usable_h - GAP_INNER;
         master_h = (int)(total_h * master->split_ratio);
@@ -238,7 +217,7 @@ static void tile(void) {
     }
 }
 
-/* Registers and adds a newly mapped application window into a specific workspace tracking registry */
+
 static int add_client_to_ws(Window w, int target_ws) {
     Workspace *ws = &workspaces[target_ws];
     for (int i = 0; i < ws->count; i++) {
@@ -270,7 +249,7 @@ static int add_client_to_ws(Window w, int target_ws) {
     return 0;
 }
 
-/* Safely removes a client record from a designated workspace array */
+
 static void remove_client_from_ws(Window w, int ws_index) {
     Workspace *ws = &workspaces[ws_index];
     int found = -1;
@@ -291,14 +270,14 @@ static void remove_client_from_ws(Window w, int ws_index) {
     }
 }
 
-/* Searches and purges a closed or unmapped window from all system workspaces */
+
 static void remove_client(Window w) {
     for (int ws_idx = 0; ws_idx < NUM_WORKSPACES; ws_idx++) {
         remove_client_from_ws(w, ws_idx);
     }
 }
 
-/* Moves the currently focused window from the current workspace to a target workspace */
+
 static void move_window_to_workspace(int target_ws) {
     if (target_ws < 0 || target_ws >= NUM_WORKSPACES || target_ws == current_ws)
         return;
@@ -338,7 +317,7 @@ static void move_window_to_workspace(int target_ws) {
     }
 }
 
-/* Toggles floating state globally across all managed clients on the active workspace */
+
 static void toggle_float_all(void) {
     Workspace *ws = &workspaces[current_ws];
     if (current_ws == SCRATCHPAD_WS || ws->stacked_mode) return;
@@ -369,7 +348,7 @@ static void toggle_float_all(void) {
     }
 }
 
-/* Toggles the stacked layout visualization mode for the current workspace */
+
 static void toggle_stacked(void) {
     Workspace *ws = &workspaces[current_ws];
     if (current_ws == SCRATCHPAD_WS) return;
@@ -383,7 +362,7 @@ static void toggle_stacked(void) {
     }
 }
 
-/* Cycles focus forward or backward through windows in stacked layout mode */
+
 static void cycle_stack(int direction) {
     Workspace *ws = &workspaces[current_ws];
     if (!ws->stacked_mode || ws->count <= 1) return;
@@ -394,7 +373,7 @@ static void cycle_stack(int direction) {
     update_borders(ws->clients[ws->stack_index].win);
 }
 
-/* Toggles floating mode strictly for the currently active single focused window */
+
 static void toggle_float_single(void) {
     Workspace *ws = &workspaces[current_ws];
     if (current_ws == SCRATCHPAD_WS || ws->stacked_mode) return;
@@ -426,7 +405,7 @@ static void toggle_float_single(void) {
     }
 }
 
-/* Swaps the position of the focused window with the primary master slot window */
+
 static void swap_windows(void) {
     Workspace *ws = &workspaces[current_ws];
     if (ws->count < 2 || current_ws == SCRATCHPAD_WS || ws->stacked_mode) return;
@@ -460,7 +439,7 @@ static void swap_windows(void) {
     }
 }
 
-/* Swaps adjacent window positions based on directional inputs */
+
 static void swap_windows_direction(int direction) {
     Workspace *ws = &workspaces[current_ws];
     if (ws->count < 2 || current_ws == SCRATCHPAD_WS || ws->stacked_mode) return;
@@ -496,7 +475,7 @@ static void swap_windows_direction(int direction) {
     }
 }
 
-/* Modifies size ratios or dimensions dynamically based on arrow key inputs */
+
 static void resize_window_direction(int keycode) {
     Workspace *ws = &workspaces[current_ws];
     if (current_ws == SCRATCHPAD_WS || ws->stacked_mode || ws->count == 0) return;
@@ -583,7 +562,7 @@ static void resize_window_direction(int keycode) {
     update_borders(focused);
 }
 
-/* Switches the active viewport view to a designated target workspace */
+
 static void view_workspace(int target_ws) {
     if (target_ws < 0 || target_ws >= NUM_WORKSPACES || target_ws == current_ws)
         return;
@@ -603,7 +582,7 @@ static void view_workspace(int target_ws) {
     }
 }
 
-/* Spawns an external shell command safely via a forked child process */
+
 static void run_cmd(const char *cmd) {
     if (fork() == 0) {
         setsid();
@@ -613,17 +592,13 @@ static void run_cmd(const char *cmd) {
     while (waitpid(-1, NULL, WNOHANG) > 0);
 }
 
-/* Suppresses unhandled X11 system error codes gracefully to prevent crashes */
+
 int on_x_error(Display *d, XErrorEvent *e) {
     return 0;
 }
 
-
-/* MAIN ENTRY POINT AND EVENT LOOP SETUP */
-
-
 int main() {
-    /* Initialize connection to the X11 display server */
+
     dpy = XOpenDisplay(NULL);
     if (!dpy) {
         fprintf(stderr, "sehwm: Failed to open X display!\n");
@@ -638,13 +613,7 @@ int main() {
     for (int i = 0; i < NUM_WORKSPACES; i++) {
         workspaces[i].split_vertical = 0; 
     }
-
-    
-    /* KEYBOARD SHORTCUTS AND KEYCODES MAPPING SECTION */
-    /* Here we define and map symbolic keys to internal keycodes for actions, */
-    /* applications, and media shortcuts controlled via modifier combinations.*/
-    
-
+       
     KeyCode term_code     = XKeysymToKeycode(dpy, XK_Return);
     KeyCode fileman_code  = XKeysymToKeycode(dpy, XK_f);
     KeyCode browser_code  = XKeysymToKeycode(dpy, XK_b);
@@ -693,12 +662,7 @@ int main() {
 
     unsigned int modifiers[] = { 0, LockMask, Mod2Mask, LockMask | Mod2Mask };
     unsigned int shift_modifiers[] = { ShiftMask, LockMask | ShiftMask, Mod2Mask | ShiftMask, LockMask | Mod2Mask | ShiftMask };
-
-   
-    /* X11 KEY AND MOUSE BINDINGS REGISTRATION SECTION */
-    /* This spot loops through modifier combinations to grab global shortcuts */
-    /* and bind mouse pointer buttons for dragging and resizing windows. */
-
+          
     for (int i = 0; i < 4; i++) {
         XGrabKey(dpy, term_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, fileman_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
@@ -723,7 +687,7 @@ int main() {
         XGrabKey(dpy, n_code, MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, m_code, MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
        
-        
+       
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Escape), MODKEY | modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_s), MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
         XGrabKey(dpy, XKeysymToKeycode(dpy, XK_p), MODKEY | shift_modifiers[i], root, True, GrabModeAsync, GrabModeAsync);
@@ -764,11 +728,7 @@ int main() {
 
     XSync(dpy, False);
     printf("sehwm running successfully...\n");
-
-    /* PRIMARY X11 EVENT HANDLING LOOP */
-    /* Listens for incoming system events like window maps, key presses, and */
-    /* mouse motions, dispatching them to appropriate handling logic. */
-    
+  
     XEvent ev;
     while (1) {
         XNextEvent(dpy, &ev);
