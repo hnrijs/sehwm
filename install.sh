@@ -26,7 +26,7 @@ sudo pacman -S --needed --noconfirm \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro \
     networkmanager network-manager-applet nano \
-    xorg-xrandr power-profiles-daemon python-gobject arandr
+    xorg-xrandr power-profiles-daemon python-gobject arandr polybar
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -76,6 +76,7 @@ cat << 'EOF' > "$HOME/.xinitrc"
 feh --bg-scale "$HOME/Pictures/main.png" &
 dex --autostart --environment sehwm &
 nm-applet &
+polybar &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # Launch SEHWM
