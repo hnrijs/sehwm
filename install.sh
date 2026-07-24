@@ -102,7 +102,7 @@ find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/nu
 # 11. Add sehwm-update alias to .bashrc
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
-alias sehwm-update='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 && echo "SEHWM successfully updated!"'
+alias usehwm='cd "$HOME/seh" && gcc config.c -o sehwm -lX11'
 EOF
 
 # 12. Enable system and user services
