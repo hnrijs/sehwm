@@ -18,7 +18,7 @@ fi
 echo "Creating user directories..."
 mkdir -p "$HOME/Documents" "$HOME/Music" "$HOME/Downloads" "$HOME/Pictures" "$HOME/Videos" "$HOME/.config"
 
-# 2. Update system and install official pacman packages (added lightdm packages)
+# 2. Update system and install official pacman packages
 echo "Installing official pacman packages..."
 sudo pacman -S --needed --noconfirm \
     base-devel wget xorg-server xorg-xinit libx11 libxft libxinerama \
@@ -26,7 +26,7 @@ sudo pacman -S --needed --noconfirm \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro nano  \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
-    lightdm lightdm-gtk-greeter materia-theme
+    lightdm lightdm-gtk-greeter materia-theme dunst
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -90,8 +90,9 @@ chmod +x "$HOME/.xinitrc" "$HOME/.xsession"
 cat << 'EOF' > "$HOME/.xprofile"
 #!/bin/bash
 feh --bg-scale "$HOME/Pictures/main.png" &
-nm-applet &
-polybar &
+$HOME/.config/scripts/polybar.sh &
+dunst &
+xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 EOF
 chmod +x "$HOME/.xprofile"
