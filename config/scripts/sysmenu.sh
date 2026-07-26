@@ -21,7 +21,7 @@ case "$chosen" in
                     alacritty -e nano "$HOME/seh/config.c"
                     ;;
                 "Compile Seh")
-                    alacritty -e sh -c "cd $HOME/seh && gcc config.c -o sehwm -lX11 && echo 'Gatavs! Kompilācija veiksmīga. Nospied Logout (Super+Escape), lai restartētu.' && sleep 3"
+                    alacritty -e sh -c "cd $HOME/seh && gcc config.c -o sehwm -lX11 && echo 'Seh Compiled Successfully (Super + Q To Exit)' && sleep 3"
                     ;;
                 "Back"|*)
                     break
