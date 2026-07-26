@@ -73,12 +73,12 @@ case ${chosen} in
 		run_cmd --hibernate
         ;;
     $lock)
-        i3lock -c 000000 || slock
+        xsecurelock
 		;;
     $suspend)
 		run_cmd --suspend
         ;;
     $logout)
-		run_cmd --logout
+		killall sehwm
         ;;
 esac
