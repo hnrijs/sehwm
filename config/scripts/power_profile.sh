@@ -10,5 +10,5 @@ elif [ "$current" == "balanced" ]; then
     notify-send "Power Mode" "Performance" -i battery-charging -a "System"
 else
     powerprofilesctl set power-saver
-    notify-send "Power Mode" "Power Saver" -i battery-low -a "System"
+    notify-send "Power Mode" "Power Saver" 
 fi
