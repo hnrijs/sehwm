@@ -249,18 +249,6 @@ static void tile(void) {
         return; 
     }
 
-    if (current_ws == SCRATCHPAD_WS) {
-        for (int i = 0; i < ws->count; i++) {
-            Client *c = &ws->clients[i];
-            c->floating = 1;
-            XSetWindowBorderWidth(dpy, c->win, BORDER_WIDTH);
-            XMoveResizeWindow(dpy, c->win, c->x, c->y, c->width, c->height);
-            XMapWindow(dpy, c->win);
-        }
-        restack();
-        return;
-    }
-
     if (ws->stacked_mode) {
         for (int i = 0; i < ws->count; i++) {
             Client *c = &ws->clients[i];
@@ -424,13 +412,25 @@ static int add_client_to_ws(Window w, int target_ws) {
     ws->clients[ws->count].split_ratio = 0.5f;
     ws->clients[ws->count].fullscreen = 0;
     
-    int float_by_default = (target_ws == SCRATCHPAD_WS) || is_transient_or_dialog(w);
+    int float_by_default = is_transient_or_dialog(w);
     ws->clients[ws->count].floating = float_by_default;
-    ws->clients[ws->count].x = (target_ws == SCRATCHPAD_WS || float_by_default) ? (attr.x > 0 ? attr.x : 200) : attr.x;
-    ws->clients[ws->count].y = (target_ws == SCRATCHPAD_WS || float_by_default) ? (attr.y > 0 ? attr.y : 150) : attr.y;
-    ws->clients[ws->count].width = attr.width > 50 ? attr.width : 800;
-    ws->clients[ws->count].height = attr.height > 50 ? attr.height : 600;
+    int win_w = attr.width > 50 ? attr.width : 600;
+    int win_h = attr.height > 50 ? attr.height : 200;
     
+    if (float_by_default) {
+       
+        XWindowAttributes root_attr;
+        XGetWindowAttributes(dpy, root, &root_attr);
+        ws->clients[ws->count].x = (root_attr.width - win_w) / 2;
+        ws->clients[ws->count].y = (root_attr.height - win_h) / 2;
+    } else {
+       
+        ws->clients[ws->count].x = attr.x;
+        ws->clients[ws->count].y = attr.y;
+    }
+    
+    ws->clients[ws->count].width = win_w;
+    ws->clients[ws->count].height = win_h;
     ws->count++;
     
     if (ws->stacked_mode) {
@@ -500,9 +500,6 @@ static void move_window_to_workspace(int target_ws) {
     
     Workspace *dst_ws = &workspaces[target_ws];
     if (dst_ws->count < MAX_CLIENTS_PER_WS) {
-        if (target_ws == SCRATCHPAD_WS) {
-            target_client.floating = 1;
-        }
         dst_ws->clients[dst_ws->count] = target_client;
         dst_ws->count++;
         if (dst_ws->stacked_mode) {
@@ -516,7 +513,7 @@ static void move_window_to_workspace(int target_ws) {
 
 static void toggle_float_single(void) {
     Workspace *ws = &workspaces[current_ws];
-    if (current_ws == SCRATCHPAD_WS || ws->stacked_mode) return;
+    if (ws->stacked_mode) return;
     
     Client *c = get_focused_client();
     if (!c) return;
