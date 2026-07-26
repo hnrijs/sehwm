@@ -6,7 +6,7 @@
 #define COLOR_FOCUSED 0x61AFEF  
 #define COLOR_UNFOCUSED 0x555555
 #define GAP_INNER 5              
-#define GAP_TOP 40               
+#define GAP_TOP 30               
 #define GAP_SIDE 5               
 #define NUM_WORKSPACES 10        
 #define SCRATCHPAD_WS 9          
