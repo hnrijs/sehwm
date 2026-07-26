@@ -47,6 +47,7 @@ static const Key keys[] = {
     { MODKEY,            XK_v,           CMD_SPAWN,         "rofi -modi \"clipboard:greenclip print\" -show clipboard", 0 },
     { MODKEY|ShiftMask,  XK_v,           CMD_SPAWN,         "greenclip clear", 0 },
     { MODKEY|ShiftMask,  XK_l,           CMD_SPAWN,         "xsecurelock", 0 },
+    { MODKEY|ShiftMask,  XK_e,           CMD_SPAWN,         "killall sehwm", 0 },
     { MODKEY,            XK_a,           CMD_SPAWN,         "pavucontrol", 0 },
     { MODKEY|ShiftMask,  XK_s,           CMD_SPAWN,         "maim -s | xclip -selection clipboard -t image/png", 0 },
     { MODKEY|ShiftMask,  XK_p,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/power_profile.sh'", 0 },
