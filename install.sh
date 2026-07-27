@@ -26,7 +26,8 @@ sudo pacman -S --needed --noconfirm \
     xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro nano  \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
-    lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock
+    lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
+    curl jq xdg-utils
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
