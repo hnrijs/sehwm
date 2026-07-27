@@ -91,8 +91,11 @@ chmod +x "$HOME/.xinitrc" "$HOME/.xsession"
 # Setup .xprofile for LightDM
 cat << 'EOF' > "$HOME/.xprofile"
 #!/bin/bash
+export CM_LAUNCHER=rofi
+export CM_SELECTIONS="clipboard"
 feh --bg-scale "$HOME/Pictures/main.png" &
 $HOME/.config/scripts/polybar.sh &
+clipmenud &
 dunst &
 xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
