@@ -23,7 +23,7 @@ echo "Installing official pacman packages..."
 sudo pacman -S --needed --noconfirm \
     base-devel wget xorg-server xorg-xinit libx11 libxft libxinerama \
     feh thunar rofi imv cava btop playerctl alacritty zip unzip polkit-gnome \
-    xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji \
+    xclip maim ttf-jetbrains-mono-nerd noto-fonts-emoji  ttf-nerd-fonts-symbols \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro nano  \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
     lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
