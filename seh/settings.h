@@ -8,8 +8,7 @@
 #define GAP_INNER 5              
 #define GAP_TOP 30               
 #define GAP_SIDE 5               
-#define NUM_WORKSPACES 10        
-#define SCRATCHPAD_WS 9          
+#define NUM_WORKSPACES 10              
 #define MODKEY Mod4Mask          
 
 typedef enum {
@@ -51,11 +50,13 @@ static const Key keys[] = {
     { MODKEY,            XK_a,           CMD_SPAWN,         "pavucontrol", 0 },
     { MODKEY|ShiftMask,  XK_s,           CMD_SPAWN,         "maim -s | xclip -selection clipboard -t image/png", 0 },
     { MODKEY|ShiftMask,  XK_p,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/power_profile.sh'", 0 },
+    { MODKEY|ShiftMask,  XK_t,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/ocr.sh'", 0 },
+    { MODKEY|ShiftMask,  XK_a,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/screen_search.sh'", 0 },
     { MODKEY,            XK_Escape,      CMD_SPAWN,         "sh -c '$HOME/.config/scripts/rofi-powermenu.sh'", 0 },
     { MODKEY|ShiftMask,  XK_u,           CMD_SPAWN,         "alacritty -e sh -c '$HOME/.config/scripts/system_update.sh; echo \"Press [Enter] to close...\"; read'", 0 },
     { MODKEY|ShiftMask,  XK_c,           CMD_SPAWN,         "alacritty -e sh -c '$HOME/.config/scripts/system_clean.sh; echo \"Press [Enter] to close...\"; read'", 0 },
     { MODKEY|ShiftMask,  XK_n,           CMD_SPAWN,         "alacritty -e nmtui", 0 },
-    { MODKEY|ShiftMask,  XK_m,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/sysmenu.sh'", 0 },
+    { MODKEY|ShiftMask,  XK_space,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/sysmenu.sh'", 0 },
 
     { MODKEY,            XK_q,           FUNC_KILL,         NULL, 0 },
     { MODKEY,            XK_z,           FUNC_FLOAT_SINGLE, NULL, 0 },
