@@ -27,7 +27,7 @@ sudo pacman -S --needed --noconfirm \
     gtk3 fastfetch pavucontrol nwg-look mpv brightnessctl xsettingsd micro nano  \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
     lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
-    curl jq xdg-utils
+    curl jq xdg-utils tesseract tesseract-data-eng imagemagick libnotify vim
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -92,6 +92,7 @@ cat << 'EOF' > "$HOME/.xprofile"
 #!/bin/bash
 feh --bg-scale "$HOME/Pictures/main.png" &
 $HOME/.config/scripts/polybar.sh &
+$HOME/.config/scripts/ocr.sh &
 dunst &
 xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
