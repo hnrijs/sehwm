@@ -6,6 +6,7 @@
 #include <X11/XF86keysym.h>
 #include <X11/extensions/Xrandr.h>
 #include <X11/Xft/Xft.h>
+#include <X11/cursorfont.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,6 +48,7 @@ typedef struct {
     int x, y, w, h;
     char name[64];
     int active_ws; 
+    int top_gap; 
 } Monitor;
 
 static Workspace workspaces[NUM_WORKSPACES]; 
@@ -90,9 +92,11 @@ static void update_monitors(void) {
             strncpy(monitors[num_mons].name, oi->name, sizeof(monitors[num_mons].name)-1);
             
             int ws_assigned = -1;
+            int top_gap = 0;
             for (int r = 0; r < sizeof(mon_rules) / sizeof(mon_rules[0]); r++) {
                 if (strcmp(mon_rules[r].monitor_name, oi->name) == 0) {
                     ws_assigned = mon_rules[r].workspace_index;
+                    top_gap = mon_rules[r].top_gap;
                     break;
                 }
             }
@@ -102,6 +106,7 @@ static void update_monitors(void) {
             }
             
             monitors[num_mons].active_ws = ws_assigned;
+            monitors[num_mons].top_gap = top_gap;
             XRRFreeOutputInfo(oi);
             num_mons++;
         }
@@ -277,6 +282,7 @@ static void tile(void) {
         int sy = monitors[mon_idx].y;
         int sw = monitors[mon_idx].w;
         int sh = monitors[mon_idx].h;
+        int gap_top = monitors[mon_idx].top_gap;
 
         Workspace *ws = &workspaces[w];
         int has_fullscreen = 0;
@@ -307,9 +313,9 @@ static void tile(void) {
                 if (c->floating) continue;
                 if (i == ws->stack_index) {
                     XSetWindowBorderWidth(dpy, c->win, BORDER_WIDTH);
-                    XMoveResizeWindow(dpy, c->win, sx + GAP_SIDE, sy + GAP_TOP, 
+                    XMoveResizeWindow(dpy, c->win, sx + GAP_SIDE, sy + gap_top, 
                                       sw - (GAP_SIDE * 2) - (BORDER_WIDTH * 2), 
-                                      sh - GAP_TOP - GAP_SIDE - (BORDER_WIDTH * 2));
+                                      sh - gap_top - GAP_SIDE - (BORDER_WIDTH * 2));
                     XMapWindow(dpy, c->win);
                 } else {
                     XUnmapWindow(dpy, c->win);
@@ -322,9 +328,9 @@ static void tile(void) {
             }
             if (tiled_count > 0) {
                 int usable_x = sx + GAP_SIDE;
-                int usable_y = sy + GAP_TOP;
+                int usable_y = sy + gap_top;
                 int usable_w = sw - (GAP_SIDE * 2);
-                int usable_h = sh - GAP_TOP - GAP_SIDE;
+                int usable_h = sh - gap_top - GAP_SIDE;
                 if (tiled_count == 1) {
                     for (int i = 0; i < ws->count; i++) {
                         Client *c = &ws->clients[i];
@@ -641,6 +647,9 @@ int main(void) {
     XSetErrorHandler(on_x_error);
     root = DefaultRootWindow(dpy);
     
+    Cursor cursor = XCreateFontCursor(dpy, XC_left_ptr);
+    XDefineCursor(dpy, root, cursor);
+    
     update_monitors();
 
     main_font = XftFontOpenName(dpy, DefaultScreen(dpy), fonts[0]);
@@ -658,6 +667,7 @@ int main(void) {
     Atom net_supported = XInternAtom(dpy, "_NET_SUPPORTED", False);
     Atom supported_atoms[] = { net_wm_state, net_wm_fullscreen };
     XChangeProperty(dpy, root, net_supported, XA_ATOM, 32, PropModeReplace, (unsigned char *)supported_atoms, 2);
+    
     XSelectInput(dpy, root, SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask | PointerMotionMask);
     
     for (int i = 0; i < NUM_WORKSPACES; i++) workspaces[i].split_vertical = 0;
@@ -845,7 +855,7 @@ int main(void) {
                     }
                     XMoveResizeWindow(dpy, drag_client->win, drag_client->x, drag_client->y, drag_client->width, drag_client->height);
                     XSync(dpy, False);
-                } else {                  
+                } else {
                     int target_mon = cur_mon;
                     for(int m = 0; m < num_mons; m++) {
                         if(ev.xmotion.x_root >= monitors[m].x && ev.xmotion.x_root < monitors[m].x + monitors[m].w &&
@@ -967,6 +977,7 @@ int main(void) {
         }
     }
     
+    XFreeCursor(dpy, cursor);
     XftFontClose(dpy, main_font);
     XCloseDisplay(dpy);
     return 0;
