@@ -1,11 +1,11 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 #include <X11/XF86keysym.h>
+
 #define BORDER_WIDTH 2         
 #define COLOR_FOCUSED 0x61AFEF  
 #define COLOR_UNFOCUSED 0x555555
 #define GAP_INNER 5              
-#define GAP_TOP 30               
 #define GAP_SIDE 5               
 #define NUM_WORKSPACES 10              
 #define MODKEY Mod4Mask          
@@ -17,16 +17,15 @@ static const char dmenufont[] = FONT_NAME;
 typedef struct {
     const char *monitor_name;
     int workspace_index;
+    int top_gap;
 } MonitorRule;
 
 static const MonitorRule mon_rules[] = {
-
-    { "DP-4",             0 }, 
-    { "HDMI-0",           1 },
-    { "DP-0",             2 },
-    { "DP-2",             3 },  
+    { "DP-4",             0, 30 }, 
+    { "HDMI-0",           1, 5  },
+    { "DP-0",             2, 5  },
+    { "DP-2",             3, 5  },  
 };
-
 
 typedef enum {
     CMD_SPAWN,
@@ -64,7 +63,10 @@ static const Key keys[] = {
     { MODKEY|ShiftMask,  XK_l,           CMD_SPAWN,         "xsecurelock", 0 },
     { MODKEY|ShiftMask,  XK_e,           CMD_SPAWN,         "killall sehwm", 0 },
     { MODKEY,            XK_a,           CMD_SPAWN,         "pavucontrol", 0 },
-    { MODKEY|ShiftMask,  XK_s,           CMD_SPAWN,         "maim -s | xclip -selection clipboard -t image/png", 0 },
+    
+    { MODKEY|ShiftMask,  XK_s,           CMD_SPAWN,         "sh -c 'mkdir -p ~/Pictures/Screenshots && f=~/Pictures/Screenshots/scr_$(date +%s).png && maim -s \"$f\" && xclip -selection clipboard -t image/png -i \"$f\"'", 0 },
+    { MODKEY|ShiftMask,  XK_x,           CMD_SPAWN,         "sh -c 'mkdir -p ~/Pictures/Screenshots && f=~/Pictures/Screenshots/scr_$(date +%s).png && maim \"$f\" && xclip -selection clipboard -t image/png -i \"$f\"'", 0 },
+    
     { MODKEY|ShiftMask,  XK_p,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/power_profile.sh'", 0 },
     { MODKEY|ShiftMask,  XK_t,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/ocr.sh'", 0 },
     { MODKEY|ShiftMask,  XK_a,           CMD_SPAWN,         "sh -c '$HOME/.config/scripts/screen_search.sh'", 0 },
