@@ -43,7 +43,7 @@ fi
 
 # 4. Install AUR packages
 echo "Installing AUR packages..."
-yay -S --noconfirm helium-browser-bin rofi-greenclip
+yay -S --noconfirm helium-browser-bin
 
 # 5. Copy configuration files (.config directory)
 echo "Copying config files to $HOME/.config/..."
@@ -147,12 +147,11 @@ find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/nu
 # 12. Add sehwm-update alias to .bashrc
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
-alias usehwm='cd "$HOME/seh" && gcc config.c -o sehwm -lX11'
+alias usehwm='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 -lXinerama -lXrandr -lXft -lfontconfig -I/usr/include/freetype2'
 EOF
 
 # 13. Enable system and user services
 echo "Enabling services..."
-systemctl --user enable --now greenclip.service || true
 sudo systemctl enable --now power-profiles-daemon
 sudo systemctl enable lightdm
 
