@@ -21,7 +21,7 @@ case "$chosen" in
                     alacritty -e nano "$HOME/seh/config.c"
                     ;;
                 "Compile Seh")
-                    alacritty -e sh -c "cd $HOME/seh && gcc config.c -o sehwm -lX11 && echo 'Seh Compiled Successfully' && sleep 0"
+                    alacritty -e sh -c "cd $HOME/seh && gcc config.c -o sehwm -lX11 -lXinerama -lXrandr -lXft -lfontconfig -I/usr/include/freetype2 && echo 'Seh Compiled Successfully' && sleep 0"
                     ;;
                 "Back"|*)
                     break
