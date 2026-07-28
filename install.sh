@@ -74,11 +74,19 @@ echo "Setting up X11 startup scripts..."
 cat << 'EOF' > "$HOME/.xinitrc"
 #!/bin/bash
 
-# Autostart background processes & wallpaper
+if [ -f "$HOME/.Xresources" ]; then
+    xrdb -merge "$HOME/.Xresources"
+fi
+export XCURSOR_SIZE=24
+export XCURSOR_THEME="Adwaita"
+export CM_LAUNCHER=rofi
+export CM_SELECTIONS="clipboard"
 feh --bg-scale "$HOME/Pictures/main.png" &
-dex --autostart --environment sehwm &
-nm-applet &
-polybar &
+$HOME/.config/scripts/polybar.sh &
+$HOME/.config/scripts/screen.sh &
+clipmenud &
+dunst &
+xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # Launch SEHWM
@@ -91,10 +99,16 @@ chmod +x "$HOME/.xinitrc" "$HOME/.xsession"
 # Setup .xprofile for LightDM
 cat << 'EOF' > "$HOME/.xprofile"
 #!/bin/bash
+if [ -f "$HOME/.Xresources" ]; then
+    xrdb -merge "$HOME/.Xresources"
+fi
+export XCURSOR_SIZE=24
+export XCURSOR_THEME="Adwaita"
 export CM_LAUNCHER=rofi
 export CM_SELECTIONS="clipboard"
 feh --bg-scale "$HOME/Pictures/main.png" &
 $HOME/.config/scripts/polybar.sh &
+$HOME/.config/scripts/screen.sh &
 clipmenud &
 dunst &
 xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
