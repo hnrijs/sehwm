@@ -522,16 +522,37 @@ static void remove_client(Window w) {
 }
 
 static void move_window_to_workspace(int target_ws) {
-    if (target_ws < 0 || target_ws >= NUM_WORKSPACES || target_ws == current_ws)
-        return;
     Client *c = get_focused_client();
     if (!c) return;
     Window focused = c->win;
-    Client target_client = *c;
-    remove_client_from_ws(focused, current_ws);
-    XUnmapWindow(dpy, focused);
+    int source_ws = -1;
+    for (int i = 0; i < NUM_WORKSPACES; i++) {
+        for (int j = 0; j < workspaces[i].count; j++) {
+            if (workspaces[i].clients[j].win == focused) {
+                source_ws = i;
+                break;
+            }
+        }
+        if (source_ws != -1) break;
+    }
+
+    if (source_ws == -1 || target_ws == source_ws || target_ws < 0 || target_ws >= NUM_WORKSPACES)
+        return;        
+    Client target_client = *c; 
+    remove_client_from_ws(focused, source_ws);
+    XUnmapWindow(dpy, focused);    
     Workspace *dst_ws = &workspaces[target_ws];
     if (dst_ws->count < MAX_CLIENTS_PER_WS) {
+        if (target_client.floating) {
+            for (int m = 0; m < num_mons; m++) {
+                if (monitors[m].active_ws == target_ws) {
+                    target_client.x = monitors[m].x + (monitors[m].w - target_client.width) / 2;
+                    target_client.y = monitors[m].y + (monitors[m].h - target_client.height) / 2;
+                    break;
+                }
+            }
+        }
+        
         dst_ws->clients[dst_ws->count] = target_client;
         dst_ws->count++;
         if (dst_ws->stacked_mode) {
@@ -541,7 +562,6 @@ static void move_window_to_workspace(int target_ws) {
     tile();
     focus_default();
 }
-
 static void toggle_float_single(void) {
     Workspace *ws = &workspaces[current_ws];
     if (ws->stacked_mode) return;
