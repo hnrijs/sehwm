@@ -525,6 +525,7 @@ static void move_window_to_workspace(int target_ws) {
     Client *c = get_focused_client();
     if (!c) return;
     Window focused = c->win;
+    
     int source_ws = -1;
     for (int i = 0; i < NUM_WORKSPACES; i++) {
         for (int j = 0; j < workspaces[i].count; j++) {
@@ -537,10 +538,13 @@ static void move_window_to_workspace(int target_ws) {
     }
 
     if (source_ws == -1 || target_ws == source_ws || target_ws < 0 || target_ws >= NUM_WORKSPACES)
-        return;        
+        return;
+        
     Client target_client = *c; 
+    
     remove_client_from_ws(focused, source_ws);
-    XUnmapWindow(dpy, focused);    
+    XUnmapWindow(dpy, focused);
+    
     Workspace *dst_ws = &workspaces[target_ws];
     if (dst_ws->count < MAX_CLIENTS_PER_WS) {
         if (target_client.floating) {
@@ -562,6 +566,7 @@ static void move_window_to_workspace(int target_ws) {
     tile();
     focus_default();
 }
+
 static void toggle_float_single(void) {
     Workspace *ws = &workspaces[current_ws];
     if (ws->stacked_mode) return;
@@ -838,6 +843,7 @@ int main(void) {
                     while (XCheckTypedEvent(dpy, MotionNotify, &ev));
                     int dx = ev.xmotion.x_root - mouse_start_x;
                     int dy = ev.xmotion.y_root - mouse_start_y;
+                    
                     if (is_dragging) {
                         drag_client->x = win_orig_x + dx;
                         drag_client->y = win_orig_y + dy;
@@ -852,21 +858,34 @@ int main(void) {
                         }
                         
                         if (target_mon != cur_mon) {
-                            int old_ws = current_ws;
                             int new_ws = monitors[target_mon].active_ws;
-                            if (old_ws != new_ws) {
+                            int actual_source = -1;
+                            for (int i = 0; i < NUM_WORKSPACES; i++) {
+                                for (int j = 0; j < workspaces[i].count; j++) {
+                                    if (workspaces[i].clients[j].win == drag_client->win) {
+                                        actual_source = i;
+                                        break;
+                                    }
+                                }
+                                if (actual_source != -1) break;
+                            }
+                            
+                            if (actual_source != -1 && actual_source != new_ws) {
                                 Client temp = *drag_client;
-                                remove_client_from_ws(temp.win, old_ws);
+                                remove_client_from_ws(temp.win, actual_source);
                                 
                                 Workspace *dst_ws = &workspaces[new_ws];
-                                dst_ws->clients[dst_ws->count] = temp;
-                                drag_client = &dst_ws->clients[dst_ws->count]; 
-                                dst_ws->count++;
-                                if (dst_ws->stacked_mode) dst_ws->stack_index = dst_ws->count - 1;
+                                if (dst_ws->count < MAX_CLIENTS_PER_WS) {
+                                    dst_ws->clients[dst_ws->count] = temp;
+                                    drag_client = &dst_ws->clients[dst_ws->count]; 
+                                    dst_ws->count++;
+                                    if (dst_ws->stacked_mode) dst_ws->stack_index = dst_ws->count - 1;
+                                }
                                 
                                 cur_mon = target_mon;
                                 current_ws = new_ws;
                                 XChangeProperty(dpy, root, XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False), XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&current_ws, 1);
+                                tile();
                             }
                         }
                     } else if (is_resizing) {
@@ -874,7 +893,6 @@ int main(void) {
                         drag_client->height = (win_orig_h + dy > 50) ? win_orig_h + dy : 50;
                     }
                     XMoveResizeWindow(dpy, drag_client->win, drag_client->x, drag_client->y, drag_client->width, drag_client->height);
-                    XSync(dpy, False);
                 } else {
                     int target_mon = cur_mon;
                     for(int m = 0; m < num_mons; m++) {
