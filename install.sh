@@ -61,7 +61,7 @@ if [ -d "$SCRIPT_DIR/seh" ]; then
     
     # Enter directory, compile config.c into sehwm, and set permissions
     cd "$HOME/seh"
-    gcc config.c -o sehwm -lX11
+    gcc config.c -o sehwm -lX11 -lXinerama -lXrandr -lXft -lfontconfig -I/usr/include/freetype2
     sudo chown -R "$USER:$USER" "$HOME/seh"
 else
     echo "Error: seh directory not found in repository!"
