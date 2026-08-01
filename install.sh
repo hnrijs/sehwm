@@ -28,7 +28,7 @@ sudo pacman -S --needed --noconfirm \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
     lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
     curl jq xdg-utils tesseract tesseract-data-eng imagemagick libnotify vim \
-    clipmenu xsel xdotool tumbler
+    clipmenu xsel xdotool tumbler picom
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
@@ -113,6 +113,7 @@ $HOME/.config/scripts/polybar.sh &
 $HOME/.config/scripts/screen.sh &
 clipmenud &
 dunst &
+picom &
 xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 EOF
