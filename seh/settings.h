@@ -3,8 +3,8 @@
 #include <X11/XF86keysym.h>
 
 #define BORDER_WIDTH 2         
-#define COLOR_FOCUSED 0x61AFEF  
-#define COLOR_UNFOCUSED 0x555555
+#define COLOR_FOCUSED 0xffffffff  
+#define COLOR_UNFOCUSED 0xff282c34 
 #define GAP_INNER 5              
 #define GAP_SIDE 5               
 #define NUM_WORKSPACES 10              
@@ -53,6 +53,7 @@ static const Key keys[] = {
     { MODKEY,            XK_f,           CMD_SPAWN,         "thunar", 0 },
     { MODKEY,            XK_b,           CMD_SPAWN,         "helium-browser", 0 },
     { MODKEY,            XK_d,           CMD_SPAWN,         "discord", 0 },
+    { MODKEY,            XK_r,           CMD_SPAWN,         "resolve", 0 },
     { MODKEY,            XK_c,           CMD_SPAWN,         "code", 0 },
     { MODKEY,            XK_m,           CMD_SPAWN,         "audacious", 0 },
     { MODKEY,            XK_p,           CMD_SPAWN,         "protonvpn-app", 0 },
