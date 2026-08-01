@@ -3,12 +3,9 @@
 echo "Starting System Cleanup"
 
 # Clean pacman cache keeping only the latest versions
-echo "1. Cleaning Pacman cache..."
-sudo paccache -r
-
 # Remove orphaned packages (unused dependencies)
 if [ -n "$(pacman -Qtdq)" ]; then
-    echo "2. Removing orphaned packages..."
+    echo "1. Removing orphaned packages..."
     sudo pacman -Rns $(pacman -Qtdq) --noconfirm
 else
     echo "2. No orphaned packages found."
