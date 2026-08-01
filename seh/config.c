@@ -187,12 +187,25 @@ static int is_transient_or_dialog(Window w) {
 static void restack(void) {
     Client *c = get_focused_client();
     Workspace *ws = &workspaces[current_ws];
-    if (c && c->floating) {
-        XRaiseWindow(dpy, c->win);
-    }
+    
+    Client *fs_client = NULL;
     for (int i = 0; i < ws->count; i++) {
-        if (!ws->clients[i].floating) {
-            XLowerWindow(dpy, ws->clients[i].win);
+        if (ws->clients[i].fullscreen) {
+            fs_client = &ws->clients[i];
+            break;
+        }
+    }
+
+    if (fs_client) {
+        XRaiseWindow(dpy, fs_client->win);
+    } else {
+        if (c && c->floating) {
+            XRaiseWindow(dpy, c->win);
+        }
+        for (int i = 0; i < ws->count; i++) {
+            if (!ws->clients[i].floating) {
+                XLowerWindow(dpy, ws->clients[i].win);
+            }
         }
     }
     XSync(dpy, False);
