@@ -28,7 +28,7 @@ sudo pacman -S --needed --noconfirm \
     xorg-xrandr power-profiles-daemon python-gobject arandr polybar \
     lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
     curl jq xdg-utils tesseract tesseract-data-eng imagemagick libnotify vim \
-    clipmenu xsel xdotool
+    clipmenu xsel xdotool tumbler
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
