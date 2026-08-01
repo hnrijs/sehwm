@@ -77,6 +77,8 @@ cat << 'EOF' > "$HOME/.xinitrc"
 if [ -f "$HOME/.Xresources" ]; then
     xrdb -merge "$HOME/.Xresources"
 fi
+export __GL_SYNC_TO_VBLANK=1
+export __GL_SYNC_DISPLAY_DEVICE="DP-4"
 export XCURSOR_SIZE=24
 export XCURSOR_THEME="Adwaita"
 export CM_LAUNCHER=rofi
