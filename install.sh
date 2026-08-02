@@ -29,7 +29,7 @@ sudo pacman -S --needed --noconfirm \
     lightdm lightdm-gtk-greeter materia-theme dunst xorg-xinput xsecurelock \
     curl jq xdg-utils tesseract tesseract-data-eng imagemagick libnotify vim \
     clipmenu xsel xdotool tumbler picom ttf-dejavu ttf-font-awesome noto-fonts \
-    noto-fonts-cjk
+    noto-fonts-cjk gvfs udisks2 thunar-volman
 
 # 3. Check and install yay AUR helper
 if ! command -v yay &> /dev/null; then
