@@ -70,36 +70,20 @@ fi
 
 cd "$SCRIPT_DIR"
 
-# 7. Setup SEHWM startup files (.xinitrc and .xsession)
-echo "Setting up X11 startup scripts..."
-cat << 'EOF' > "$HOME/.xinitrc"
-#!/bin/bash
-
-if [ -f "$HOME/.Xresources" ]; then
-    xrdb -merge "$HOME/.Xresources"
-fi
-export __GL_SYNC_TO_VBLANK=1
-export __GL_SYNC_DISPLAY_DEVICE="DP-4"
-export XCURSOR_SIZE=24
-export XCURSOR_THEME="Adwaita"
-export CM_LAUNCHER=rofi
-export CM_SELECTIONS="clipboard"
-feh --bg-scale "$HOME/Pictures/main.png" &
-$HOME/.config/scripts/polybar.sh &
-$HOME/.config/scripts/screen.sh &
-clipmenud &
-dunst &
-xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-
-# Launch SEHWM
-exec "$HOME/seh/sehwm"
+# 7. Disable mouse acceleration globally
+echo "Disabling mouse acceleration globally..."
+sudo mkdir -p /etc/X11/xorg.conf.d
+cat << 'EOF' | sudo tee /etc/X11/xorg.conf.d/50-mouse-acceleration.conf > /dev/null
+Section "InputClass"
+    Identifier "My Mouse"
+    MatchIsPointer "yes"
+    Option "AccelProfile" "flat"
+    Option "AccelSpeed" "0"
+EndSection
 EOF
 
-cp "$HOME/.xinitrc" "$HOME/.xsession"
-chmod +x "$HOME/.xinitrc" "$HOME/.xsession"
-
-# Setup .xprofile for LightDM
+# 8. Setup .xprofile for LightDM
+echo "Setting up X11 startup script (.xprofile)..."
 cat << 'EOF' > "$HOME/.xprofile"
 #!/bin/bash
 if [ -f "$HOME/.Xresources" ]; then
@@ -115,12 +99,11 @@ $HOME/.config/scripts/screen.sh &
 clipmenud &
 dunst &
 picom &
-xinput --set-prop $(xinput list | grep -i "mouse" | head -n 1 | grep -o 'id=[0-9]*' | cut -d= -f2) "libinput Accel Profile Enabled" 0, 1, 0 &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 EOF
 chmod +x "$HOME/.xprofile"
 
-# 8. Create xsessions entry for LightDM (using EOF without quotes so $HOME expands to your actual path)
+# 9. Create xsessions entry for LightDM
 echo "Creating SEHWM desktop session for LightDM..."
 sudo mkdir -p /usr/share/xsessions
 cat << EOF | sudo tee /usr/share/xsessions/sehwm.desktop > /dev/null
@@ -133,28 +116,28 @@ X-LightDM-DesktopName=sehwm
 DesktopNames=sehwm
 EOF
 
-# 9. Copy wallpaper to Pictures directory
+# 10. Copy wallpaper to Pictures directory
 if [ -f "$SCRIPT_DIR/main.png" ]; then
     echo "Copying wallpaper to $HOME/Pictures/main.png..."
     cp "$SCRIPT_DIR/main.png" "$HOME/Pictures/main.png"
 fi
 
-# 10. Make custom scripts executable
+# 11. Make custom scripts executable
 if [ -d "$HOME/.config/scripts" ]; then
     chmod +x "$HOME/.config/scripts/"*
 fi
 
-# 11. Dynamically fix home paths in configs for current user
+# 12. Dynamically fix home paths in configs
 echo "Fixing home paths in configurations for $USER..."
 find "$HOME/.config" -type f -exec sed -i "s|/home/[^/]*|$HOME|g" {} + 2>/dev/null || true
 
-# 12. Add sehwm-update alias to .bashrc
+# 13. Add sehwm-update alias to .bashrc
 echo "Adding sehwm-update alias..."
 cat << 'EOF' >> "$HOME/.bashrc"
 alias usehwm='cd "$HOME/seh" && gcc config.c -o sehwm -lX11 -lXinerama -lXrandr -lXft -lfontconfig -I/usr/include/freetype2'
 EOF
 
-# 13. Enable system and user services
+# 14. Enable system and user services
 echo "Enabling services..."
 sudo systemctl enable --now power-profiles-daemon
 sudo systemctl enable lightdm
