@@ -23,18 +23,18 @@ echo "Installing official Gentoo binaries..."
 sudo emerge --ask=n \
     sys-devel/gcc x11-base/xorg-server x11-apps/xinit x11-libs/libX11 \
     x11-libs/libXft x11-libs/libXinerama x11-libs/libXrandr media-libs/fontconfig \
-    media-libs/freetype media-gfx/feh x11-misc/rofi media-gfx/imv media-sound/cava \
+    media-libs/freetype media-gfx/feh gui-apps/rofi media-gfx/imv media-sound/cava \
     sys-process/btop media-sound/playerctl gui-apps/alacritty app-arch/zip \
-    app-arch/unzip gnome-base/polkit-gnome x11-misc/xclip x11-misc/maim \
-    media-fonts/jetbrainsmono-nerdfont media-fonts/noto-emoji x11-libs/gtk+ \
+    app-arch/unzip gnome-extra/polkit-gnome x11-misc/xclip x11-misc/maim \
+    media-fonts/jetbrains-mono media-fonts/nerdfonts media-fonts/noto-emoji x11-libs/gtk+:3 \
     app-misc/fastfetch media-video/mpv sys-power/brightnessctl x11-misc/xsettingsd \
     app-editors/micro app-editors/nano x11-apps/xrandr x11-misc/polybar \
-    x11-misc/dunst x11-apps/xinput x11-misc/xsecurelock net-misc/curl \
+    gui-apps/dunst x11-apps/xinput x11-misc/xsecurelock net-misc/curl \
     app-misc/jq x11-misc/xdg-utils app-text/tesseract media-gfx/imagemagick \
     x11-libs/libnotify app-editors/vim x11-misc/xsel x11-misc/xdotool \
-    x11-misc/picom media-fonts/dejavu media-fonts/font-awesome media-fonts/noto \
-    gnome-base/gvfs sys-fs/udisks x11-misc/clipmenu sys-apps/dbus x11-misc/lightdm \
-    x11-misc/lightdm-gtk-greeter x11-themes/materia-theme
+    gui-wm/picom media-fonts/dejavu media-fonts/font-awesome media-fonts/noto \
+    gnome-base/gvfs sys-fs/udisks x11-misc/clipmenu sys-apps/dbus gui-display/lightdm \
+    gui-display/lightdm-gtk-greeter x11-themes/materia-theme
 
 # 3 & 4. Install Firefox via Binary distribution matching custom build configurations
 if ! command -v firefox-bin &> /dev/null; then
