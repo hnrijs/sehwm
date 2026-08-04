@@ -8,12 +8,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "Starting automated Gentoo deployment layout..."
 
-# 0. Ensure git is installed first
-if ! command -v git &> /dev/null; then
-    echo "Installing git..."
-    sudo emerge --ask=n dev-vcs/git
-fi
-
 # 1. Create standard home directories
 echo "Creating user directories..."
 mkdir -p "$HOME/Documents" "$HOME/Music" "$HOME/Downloads" "$HOME/Pictures" "$HOME/Videos" "$HOME/.config"
